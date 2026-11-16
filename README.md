@@ -39,7 +39,7 @@ Your workstation is a pane beside the chat: a grid of numbers. Most of them are 
 
 Move with the arrows, `ZQSD` or `WASD` (caps lock is respected but not required), or drag with the mouse. `Escape` returns you to the prompt. The floor never takes the keyboard on its own.
 
-Your shift begins when your agent leaves the room and ends when it returns. A Refiner still at the board when the agent returns is on **overtime**: the floor stays live until you leave it. Overtime is unpaid, as is customary.
+The floor is open whenever you are. While your agent works, it is your shift. The rest of the time is **overtime**. Overtime is unpaid, as is customary.
 
 ## Our values
 

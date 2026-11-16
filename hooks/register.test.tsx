@@ -69,21 +69,19 @@ const PANE = {
 const fileIn = (store: Record<string, unknown>): FileState | null =>
   ((store.file as { value?: FileState } | undefined)?.value ?? null)
 
-/** Whether the board shows the floor released (no shift running). */
-async function isReleased($: any): Promise<boolean> {
-  const ui = await $.ui.mount({ ...PANE, surface: 'terminal' })
-  const found = await ui.find({ type: 'Text', text: /has been released/, in: 'board' })
-  await ui.unmount()
-  return found !== undefined
-}
 
-test('a main-loop turn activates the floor, its end releases it', async ($, on) => {
+test('the end of a main-loop turn is overtime: the board says so and stays live', async ($, on) => {
   engine(on)
   await start($)
   await turn($, 't1')
-  expect(await isReleased($)).toBe(false)
+  const ui = await $.ui.mount({ ...PANE, surface: 'terminal', viewport: FULL })
+  expect(await ui.find({ type: 'Text', text: /Overtime/, in: 'board' })).toBe(undefined)
   await done($, 't1')
-  expect(await isReleased($)).toBe(true)
+  expect(await ui.find({ type: 'Text', text: /Overtime\. Unpaid/, in: 'board' })).toBeDefined()
+  const before = await cursorAt(ui)
+  await ui.key({ key: 'd', in: 'board' })
+  expect((await cursorAt(ui)).x).toBe(before.x + 1)
+  await ui.unmount()
 })
 
 test('a subagent turn neither activates the floor nor opens a file', async ($, on) => {
@@ -97,7 +95,6 @@ test('a subagent turn neither activates the floor nor opens a file', async ($, o
   await turn($, 't1')
   await done($, 't1')
   await turn($, 's2', 'agent-7')
-  expect(await isReleased($)).toBe(true)
   await done($, 's2', 'agent-7')
   expect(store.batchCounter).toBe(1)
 })
@@ -450,23 +447,16 @@ test('moving onto a group says how to take it; nothing is said off the groups or
   expect(afterMove({ ...b, msg: 'x', anchor: freeCell }, groupCell).msg).toBe('x')
 })
 
-test('overtime: the agent is back, but the board stays live while the refiner is at it', async ($, on) => {
+test('with no turn at all, a file from /latentis is playable at once', async ($, on) => {
   engine(on)
   await start($)
-  await turn($, 't1')
-  await done($, 't1')
-  // At the board (the pane holds the keyboard) after the turn: still playable.
-  const focused = { ...PANE, props: { ...PANE.props, isFocused: true } }
-  const ui = await $.ui.mount({ ...focused, surface: 'terminal', viewport: FULL })
-  expect(await ui.find({ type: 'Text', text: /Overtime\. Unpaid/, in: 'board' })).toBeDefined()
-  expect(await ui.find({ type: 'Text', text: /has been released/, in: 'board' })).toBe(undefined)
+  await run($, '')
+  const ui = await $.ui.mount({ ...PANE, surface: 'terminal', viewport: FULL })
+  expect(await ui.find({ type: 'Text', text: /Click the board\. Box a bright group/, in: 'board' })).toBeDefined()
   const before = await cursorAt(ui)
-  await ui.key({ key: 'd', in: 'board' })
-  expect((await cursorAt(ui)).x).toBe(before.x + 1)
+  await ui.key({ key: 's', in: 'board' })
+  expect((await cursorAt(ui)).y).toBe(before.y + 1)
   await ui.unmount()
-
-  // Away from the board: released, as before.
-  expect(await isReleased($)).toBe(true)
 })
 
 test('a short pane keeps the bins: the blank line, the legend and the help give way first', async ($, on) => {

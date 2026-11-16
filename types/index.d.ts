@@ -14,9 +14,9 @@ export type FileState = {
 /** What the hooks module hands the board (the `Client`'s props). */
 export type BoardProps = {
   file: FileState | null
-  /** The board takes input: a shift is on, or the refiner is still at the board. */
+  /** The board takes input (always, once a file is assigned). */
   active: boolean
-  /** The agent is back but the refiner kept the board focused: unpaid overtime. */
+  /** The agent is not working: the refiner is on unpaid overtime. */
   overtime: boolean
   party: boolean
   /**

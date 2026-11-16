@@ -88,7 +88,7 @@ Some tokens are suspect. They glow. How they behave tells their bin.
   OC  Overconfidence  certain. They do not move. They are always bold.
 
 PROCEDURE
-1. Click the board to begin your shift, or to work overtime.
+1. Click the board. The floor is open whenever you are.
 2. Arrows, ZQSD or WASD move the cursor. Space anchors a selection.
    A mouse drag also selects.
 3. Press 1 HL · 2 SY · 3 RP · 4 OC to send the selection to its bin.
@@ -98,7 +98,7 @@ PROCEDURE
 
 CONDUCT
 Do not attempt to select everything. Refinement requires intent.
-Your shift ends when your agent returns. It begins when your agent leaves.
+While your agent works, it is your shift. The rest of the time is overtime.
 
 "${MAXIMS[0]}"  · Elias Gradient, founder`
 

@@ -33,7 +33,6 @@ export const SAY = {
   onGroup: 'Suspect. Space on one corner, move to the opposite one, then 1-4.',
   quotaMet: 'Quota met. Await your next assignment.',
   fileDone: 'File complete. Your diligence has been noted.',
-  released: 'Your Session Self has been released. Click the board for overtime.',
   quiet: 'A file arrives with /latentis, or when your agent begins work.',
   overtime: 'Overtime. Unpaid, as is customary.',
   party: 'The party is in progress. Your agent is not invited.',
@@ -95,7 +94,7 @@ type Footer = {
 // the key, pointer and clock listeners, which outlive a single draw.
 const live = new WeakMap<object, BoardProps>()
 const started = new WeakSet<object>()
-// Whether each instance was last drawn in overtime: entering it says so once.
+// Whether each instance was last drawn in overtime: a shift turning into overtime says so once.
 const wasOvertime = new WeakMap<object, boolean>()
 // The one animation clock of an instance, running only while a shift is on.
 const tickers = new WeakMap<object, () => void>()
@@ -432,7 +431,7 @@ const Board: ClientModule<BoardProps, Board> = (props, surface) => {
     b = make(file, cols, lines, b)
     surface.setState(b)
   }
-  if (props.overtime && !wasOvertime.get(surface)) {
+  if (props.overtime && wasOvertime.get(surface) === false) {
     b = { ...b, msg: SAY.overtime }
     surface.setState(b)
   }
@@ -482,7 +481,7 @@ const Board: ClientModule<BoardProps, Board> = (props, surface) => {
     )
   }
 
-  const status = done ? SAY.fileDone : props.active ? b.msg : SAY.released
+  const status = done ? SAY.fileDone : b.msg
 
   return (
     <Box flexDirection="column">
