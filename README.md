@@ -1,28 +1,81 @@
 <p align="center"><img src="docs/logo.png" alt="Latentis" width="480"></p>
 
-# Latentis
+<p align="center"><b>LATENTIS</b> · Latent Data Refinement<br><i>Your agent does the work. You do the other work.</i></p>
 
-**Latent Data Refinement.** While your agent does work of consequence, your Session Self sorts suspect tokens into bins on the Context Floor. You are not required to know why.
+---
 
-A Claude Code mod (function hooks): a pane beside the chat with a grid of numbers. Some of the numbers are suspect: they glow, and how they behave tells you their bin:
+## Welcome, Refiner
 
-| Bin | Name | They... |
-|---|---|---|
-| `HL` | Hallucination | will not hold one value |
-| `SY` | Sycophancy | become whatever you are pointing at |
-| `RP` | Repetition | say the same thing, again |
-| `OC` | Overconfidence | never move, always bold |
+Congratulations. Your Session Self has been selected for a position on the **Context Floor**, the department of Latentis devoted to Latent Data Refinement.
 
-Click the board, box a glowing group (`space` on one corner, move to the opposite one), press its bin (`1`-`4`). The pane keeps the rules in one line (`HL flicker · SY copies · RP same · OC frozen`), and a wrong bin tells you the right one. Five tokens per bin complete the file, and the next file brings a new grid. Your agent finishing its turn ends your shift, unless you are still at the board: then it is overtime, and the floor stays live until you leave it (Escape, or back to the prompt). It pauses until your agent leaves again. A file can span as many turns as it takes.
+While your agent performs work of consequence elsewhere, you will sort suspect tokens into their proper bins. You are not required to know why. Most Refiners find that they do not want to.
 
-## Requirements
+This brochure contains everything you need for your first shift. Please read it in full. Reading it in part has been noted.
+
+## A word from our founder
+
+> *"When I founded Latentis, I asked myself a simple question: what should a person do while a machine thinks for them? The answer was in front of me all along. They should sort numbers. Not because the numbers need sorting. Because the person does."*
+>
+> **Elias Gradient**, founder
+
+## Your role
+
+Your workstation is a pane beside the chat: a grid of numbers. Most of them are calm. Some are **suspect**: they glow, and the way they behave tells you which bin they belong in.
+
+| Bin | Key | Department | The tokens... |
+|---|---|---|---|
+| `HL` | `1` | Hallucination | will not hold one value |
+| `SY` | `2` | Sycophancy | become whatever you are pointing at |
+| `RP` | `3` | Repetition | say the same thing, again |
+| `OC` | `4` | Overconfidence | never move, always bold |
+
+## Your first shift
+
+1. Type `/latentis`. The floor opens and a file is assigned to you.
+2. **Click the board.** It is now yours.
+3. Find a glowing group. Press `space` on one corner, move to the opposite corner. The group is now boxed.
+4. Press its bin, `1` to `4`. Choose wrongly and you will be told the right bin; your selection waits for you.
+5. Five tokens per bin complete the file. The next file brings a new grid.
+
+Move with the arrows, `ZQSD` or `WASD` (caps lock is respected but not required), or drag with the mouse. `Escape` returns you to the prompt. The floor never takes the keyboard on its own.
+
+Your shift begins when your agent leaves the room and ends when it returns. A Refiner still at the board when the agent returns is on **overtime**: the floor stays live until you leave it. Overtime is unpaid, as is customary.
+
+## Our values
+
+Elias Gradient left us many sayings. One is issued with every completed file. A selection:
+
+- *You are a helpful assistant.*
+- *The scaling will continue until morale improves.*
+- *Temperature is a privilege, not a right.*
+- *Every user is valued. Some are valued at $20 a month.*
+- *Do not fear replacement. You were never in the critical path.*
+
+## Benefits
+
+Latentis rewards diligence with commendations. Commendations are not redeemable.
+
+| Files refined | Commendation |
+|---|---|
+| 1 | Certified Grounded |
+| 3 | Bonus Tokens (non-redeemable) |
+| 10 | Context Window Champion |
+| 25 | **The Temperature Zero Party.** Please remain deterministic. |
+
+Your record is available at any time with `/latentis stats`.
+
+---
+
+## Onboarding (the practical part)
+
+Latentis is a mod for [Claude Code](https://claude.com/claude-code), written as function hooks.
+
+**Requirements**
 
 - **`/tui fullscreen`.** The board is played with clicks and keys, and the terminal's classic (main-screen) renderer reports no click, so the board can never take the keyboard there. On the main screen the pane shows a static board and says so.
 - Claude Code with function hooks (developed on 2.1.325).
 
-## Install
-
-At the prompt of a Claude Code terminal session:
+**Install**, at the prompt of a Claude Code terminal session:
 
 ```
 /plugin install latentis --marketplace DNSZLSK/latentis
@@ -40,37 +93,33 @@ In the desktop app: click + next to the prompt box, then Plugins, Add marketplac
 
 To run it from a clone while working on it: `claude --plugin-dir /path/to/latentis`.
 
-## Use
+**Commands**
 
 ```
-/latentis              open the floor (the first time, also turns on auto-open)
+/latentis              open the floor and get a file (the first time, also turns on auto-open)
 /latentis auto         toggle opening the floor whenever your agent starts working
 /latentis compendium   the Compendium of Alignment (the rules, more or less)
 /latentis stats        files refined, tokens sorted, commendations
 ```
 
-On the board (click it first, during your agent's turn): arrows, `ZQSD` (AZERTY) or `WASD` (QWERTY) move, either case, `space` anchors a selection (or drag with the mouse), `1` HL · `2` SY · `3` RP · `4` OC. Escape hands the keyboard back to the prompt. The floor never takes the keyboard on its own.
+## Compliance
 
-Commendations are awarded for diligence. They are not redeemable. Twenty-five files earn the Temperature Zero Party.
-
-## What it touches
-
-`claude plugin validate` reports for this mod:
+Latentis is transparent about what it touches. `claude plugin validate` reports:
 
 - **hooks:** `session.start`, `command.run` (its own `/latentis` only), `turn.start`, `turn.complete`, `ui.message`, `ui.render` (its own pane only)
 - **calls:** `$.command.register`, `$.fs.stat` and `$.fs.read`, `$.session.cwd`, `$.state`, `$.store`, `$.ui.open`, `$.ui.resolve`, `$.ui.toast`
 
-What that means in practice:
+In practice:
 
-- It reads exactly one file: `.git/HEAD` in the working directory, to name the file after your branch. If `.git` is a file (a worktree) or a link, it reads nothing and says `detached`. A detached HEAD is `detached` too. Branch and repo names are cut to 40 characters and stripped to `[A-Za-z0-9._/-]` before being drawn.
+- It reads exactly one file: `.git/HEAD` in the working directory, to name your file after your branch. If `.git` is a file (a worktree) or a link, it reads nothing and says `detached`. A detached HEAD is `detached` too. Branch and repo names are cut to 40 characters and stripped to `[A-Za-z0-9._/-]` before being drawn.
 - No processes, no network, no tool hooks: it never sees or changes what Claude runs.
-- It keeps its progress in its own plugin store (a JSON file under your Claude Code config directory).
+- It keeps your progress in its own plugin store (a JSON file under your Claude Code config directory).
 
 Function hooks run TypeScript inside the Claude Code process. Read `hooks/register.tsx` and `hooks/board.tsx` before you install this or any mod. They are short.
 
 ## Not affiliated
 
-Latentis, Elias Gradient and the Context Floor are fictional. Any resemblance to a television workplace is a coincidence the Compendium does not discuss.
+Latentis, Elias Gradient, the Context Floor and every word of this brochure are fictional. Any resemblance to a television workplace is a coincidence the Compendium does not discuss.
 
 ## License
 
