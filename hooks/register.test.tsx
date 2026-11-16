@@ -131,11 +131,11 @@ test('a completed file awards commendations; the next file is a new batch and se
 
   const ui = await $.ui.mount({ ...PANE, surface: 'terminal' })
   for (const bin of ['HL', 'SY', 'RP', 'OC']) {
-    for (let n = 0; n < 4; n++) await ui.post({ kind: 'binned', bin, count: 5 }, { in: 'board' })
+    for (let n = 0; n < 1; n++) await ui.post({ kind: 'binned', bin, count: 5 }, { in: 'board' })
   }
   await ui.unmount()
   expect((store.stats as any).files).toBe(1)
-  expect((store.stats as any).tokens).toBe(80)
+  expect((store.stats as any).tokens).toBe(20)
   expect((store.stats as any).badges).toEqual(['Certified Grounded'])
 
   await done($, 't1')
@@ -240,7 +240,7 @@ test('the board takes keys, a drag and the clock without breaking', async ($, on
   await start($)
   await turn($, 't1')
   const ui = await $.ui.mount({ ...PANE, surface: 'terminal' })
-  expect(await ui.find({ type: 'Text', text: /A new file has arrived/, in: 'board' })).toBeDefined()
+  expect(await ui.find({ type: 'Text', text: /Click the board\. Box a bright group/, in: 'board' })).toBeDefined()
 
   await ui.key({ key: '1', in: 'board' })
   expect(await ui.find({ type: 'Text', text: /Anchor a selection first/, in: 'board' })).toBeDefined()
@@ -441,19 +441,13 @@ test('a wrong bin names the right one and keeps the selection; the right key the
   expect(checked).toBeGreaterThan(0)
 })
 
-test('moving near a group says something stirs; moving away calms it', () => {
-  const b = make(FILE, 150, 60, undefined)
+test('moving onto a group says how to take it; nothing is said off the groups or once anchored', () => {
+  const b = make(FILE, 60, 24, undefined)
   const groupCell = b.clusters.find((c: any) => c)!.cells[0]!
-  const dist = (i: number, j: number) =>
-    Math.max(Math.abs((j % b.w) - (i % b.w)), Math.abs(Math.floor(j / b.w) - Math.floor(i / b.w)))
-  const far = Array.from({ length: b.w * b.h }, (_, i) => i).find(i =>
-    b.clusters.every((c: any) => !c || c.cells.every((j: number) => dist(i, j) > 5)),
-  )!
-  const near = afterMove({ ...b, msg: 'x' }, groupCell)
-  expect(near.msg).toBe(SAY.stirs)
-  expect(afterMove(near, far).msg).toBe(SAY.calm)
-  // Far from groups, other messages are left alone.
-  expect(afterMove({ ...b, msg: 'Refined.' }, far).msg).toBe('Refined.')
+  const freeCell = b.owner.findIndex((o: number) => o === -1)
+  expect(afterMove({ ...b, msg: 'x' }, groupCell).msg).toBe(SAY.onGroup)
+  expect(afterMove({ ...b, msg: 'x' }, freeCell).msg).toBe('x')
+  expect(afterMove({ ...b, msg: 'x', anchor: freeCell }, groupCell).msg).toBe('x')
 })
 
 test('overtime: the agent is back, but the board stays live while the refiner is at it', async ($, on) => {
@@ -464,7 +458,7 @@ test('overtime: the agent is back, but the board stays live while the refiner is
   // At the board (the pane holds the keyboard) after the turn: still playable.
   const focused = { ...PANE, props: { ...PANE.props, isFocused: true } }
   const ui = await $.ui.mount({ ...focused, surface: 'terminal', viewport: FULL })
-  expect(await ui.find({ type: 'Text', text: /Overtime\. Your agent has returned/, in: 'board' })).toBeDefined()
+  expect(await ui.find({ type: 'Text', text: /Overtime\. Unpaid/, in: 'board' })).toBeDefined()
   expect(await ui.find({ type: 'Text', text: /has been released/, in: 'board' })).toBe(undefined)
   const before = await cursorAt(ui)
   await ui.key({ key: 'd', in: 'board' })
@@ -473,4 +467,35 @@ test('overtime: the agent is back, but the board stays live while the refiner is
 
   // Away from the board: released, as before.
   expect(await isReleased($)).toBe(true)
+})
+
+test('a short pane keeps the bins: the blank line, the legend and the help give way first', async ($, on) => {
+  engine(on)
+  await start($)
+  await turn($, 't1')
+  const ui = await $.ui.mount({ ...PANE, surface: 'terminal', viewport: FULL })
+  await ui.resize({ columns: 80, rows: 8, in: 'board' })
+  const texts = (await ui.findAll({ type: 'Text', in: 'board' })).map(t => t.text ?? '')
+  expect(texts.some(t => /^1 HL/.test(t))).toBe(true)
+  expect(texts.some(t => /^3 RP/.test(t))).toBe(true)
+  expect(texts.some(t => /Batch 0001/.test(t))).toBe(true)
+  expect(texts.includes(LEGEND)).toBe(false)
+  await ui.unmount()
+})
+
+test('/latentis brings a file, so the floor is playable before any turn', async ($, on) => {
+  const { store } = engine(on)
+  await start($)
+  expect(fileIn(store)).toBe(null)
+  await run($, '')
+  expect(fileIn(store)?.name).toBe('latentis · main · Batch 0001')
+  expect(fileIn(store)?.quota).toBe(5)
+})
+
+test('a file begun under the old quota of 20 finishes under 5', async ($, on) => {
+  const { store } = engine(on)
+  store.file = { shape: 'file-1', value: { batch: 3, name: 'old', seed: 1, binned: { HL: 7, SY: 0, RP: 0, OC: 0 }, quota: 20 } }
+  await start($)
+  expect(fileIn(store)?.quota).toBe(5)
+  expect(fileIn(store)?.binned.HL).toBe(7)
 })

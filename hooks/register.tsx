@@ -121,6 +121,9 @@ export const register: Register = on => {
       const stored = (await $.store.get('file')) as { shape?: string; value?: FileState } | undefined
       if (stored?.shape === FILE_SHAPE && stored.value) await update($, fileAtom, () => stored.value ?? null)
     }
+    // A file begun under a larger quota finishes under today's.
+    const kept = await read($, fileAtom)
+    if (kept && kept.quota > QUOTA) await saveFile($, { ...kept, quota: QUOTA })
 
     return next(e)
   })
@@ -129,6 +132,9 @@ export const register: Register = on => {
     const arg = e.args.trim().toLowerCase()
 
     if (arg === '') {
+      // Opening the floor brings a file, so it is playable before any turn.
+      const current = await read($, fileAtom)
+      if (current === null || isComplete(current)) await saveFile($, await newFile($))
       const autoOpen = await $.store.get('autoOpen')
       if (autoOpen === undefined) await $.store.set('autoOpen', true)
       await openPane($)

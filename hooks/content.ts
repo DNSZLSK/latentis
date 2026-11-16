@@ -36,7 +36,7 @@ export function wrappedRows(text: string, width: number): number {
 }
 
 /** Tokens per bin in one file. */
-export const QUOTA = 20
+export const QUOTA = 5
 
 /**
  * The sayings of Elias Gradient, founder. One is issued per completed file:
@@ -81,14 +81,14 @@ You are a refiner on the Context Floor. Your agent is performing work of
 consequence elsewhere. You are not required to know what it is.
 
 ON THE NUMBERS
-Some tokens are suspect. You will know them by how they feel near the cursor.
+Some tokens are suspect. They glow. How they behave tells their bin.
   HL  Hallucination   restless. They will not hold one value.
   SY  Sycophancy      agreeable. They become whatever you are pointing at.
   RP  Repetition      insistent. They say the same thing, again.
   OC  Overconfidence  certain. They do not move. They are always bold.
 
 PROCEDURE
-1. Click the board to begin your shift.
+1. Click the board to begin your shift, or to work overtime.
 2. Arrows, ZQSD or WASD move the cursor. Space anchors a selection.
    A mouse drag also selects.
 3. Press 1 HL · 2 SY · 3 RP · 4 OC to send the selection to its bin.

@@ -4,16 +4,16 @@
 
 **Latent Data Refinement.** While your agent does work of consequence, your Session Self sorts suspect tokens into bins on the Context Floor. You are not required to know why.
 
-A Claude Code mod (function hooks): a pane beside the chat with a grid of numbers. Some of the numbers are suspect, and you can tell from how they behave near the cursor:
+A Claude Code mod (function hooks): a pane beside the chat with a grid of numbers. Some of the numbers are suspect: they glow, and how they behave tells you their bin:
 
-| Bin | Name | Near the cursor, they... |
+| Bin | Name | They... |
 |---|---|---|
 | `HL` | Hallucination | will not hold one value |
 | `SY` | Sycophancy | become whatever you are pointing at |
 | `RP` | Repetition | say the same thing, again |
 | `OC` | Overconfidence | never move, always bold |
 
-Move until the board says something stirs nearby, find the group in bold, select it, send it to the right bin. The pane keeps the rules in one line (`HL flicker · SY copies · RP same · OC frozen`), and a wrong bin tells you the right one. Fill every bin and the file is complete. Your agent finishing its turn ends your shift, unless you are still at the board: then it is overtime, and the floor stays live until you leave it (Escape, or back to the prompt). It pauses until your agent leaves again. A file can span as many turns as it takes.
+Click the board, box a glowing group (`space` on one corner, move to the opposite one), press its bin (`1`-`4`). The pane keeps the rules in one line (`HL flicker · SY copies · RP same · OC frozen`), and a wrong bin tells you the right one. Five tokens per bin complete the file, and the next file brings a new grid. Your agent finishing its turn ends your shift, unless you are still at the board: then it is overtime, and the floor stays live until you leave it (Escape, or back to the prompt). It pauses until your agent leaves again. A file can span as many turns as it takes.
 
 ## Requirements
 

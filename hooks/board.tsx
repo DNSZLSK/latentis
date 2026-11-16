@@ -13,7 +13,6 @@ import type { BinCode, BoardPost, BoardProps, FileState } from '../types'
 import { wrappedRows } from './content'
 
 const BINS: readonly BinCode[] = ['HL', 'SY', 'RP', 'OC']
-const NEAR = 5
 const TICK_MS = 160
 const MIN_GRID_ROWS = 3
 
@@ -21,23 +20,22 @@ const MIN_GRID_ROWS = 3
 export const HELP = 'ZQSD/WASD move · space select · 1-4 bin'
 /** Drawn in place of status and help on the terminal's main screen, where no click arrives. */
 export const NEEDS_FULLSCREEN = 'The Context Floor requires /tui fullscreen.'
-/** The rules in one line: what each bin's tokens do near the cursor. */
+/** The rules in one line: what each bin's glowing tokens do. */
 export const LEGEND = 'HL flicker · SY copies · RP same · OC frozen'
 
 const APPROVALS = ['Refined.', 'Acceptable.', 'The tokens are at peace.', 'Noted.']
 export const SAY = {
-  newFile: 'A new file has arrived. Click the board to begin.',
+  newFile: 'Click the board. Box a bright group, then press its bin (1-4).',
   anchorFirst: 'Anchor a selection first (space, or drag).',
   nothing: 'Nothing of concern was found in that region.',
   tooBroad: 'Selection too broad. Refinement requires intent.',
   mixed: 'The tokens were not ready: two kinds were selected.',
-  stirs: 'Something stirs nearby.',
-  calm: 'The numbers are calm here.',
+  onGroup: 'Suspect. Space on one corner, move to the opposite one, then 1-4.',
   quotaMet: 'Quota met. Await your next assignment.',
   fileDone: 'File complete. Your diligence has been noted.',
-  released: 'Your Session Self has been released. Awaiting next assignment.',
-  quiet: 'A file arrives when your agent begins its work.',
-  overtime: 'Overtime. Your agent has returned. It can wait.',
+  released: 'Your Session Self has been released. Click the board for overtime.',
+  quiet: 'A file arrives with /latentis, or when your agent begins work.',
+  overtime: 'Overtime. Unpaid, as is customary.',
   party: 'The party is in progress. Your agent is not invited.',
 } as const
 /** A wrong bin names the right one: the selection stays, so the right key finishes it. */
@@ -81,12 +79,15 @@ type Board = {
 
 type Surface = ClientSurface<Board>
 
-/** The footer as drawn at one width: its texts and the rows each takes once wrapped. */
+/** The footer as drawn in one region: its texts, which optional lines fit, and its rows. */
 type Footer = {
   bins: [string, string]
   name: string
   /** Rows kept for the status line (or the fullscreen notice): the longest it can be. */
   statusRows: number
+  showBlank: boolean
+  showLegend: boolean
+  showHelp: boolean
   rows: number
 }
 
@@ -110,8 +111,12 @@ function bar(n: number, of: number): string {
   return '█'.repeat(filled) + '░'.repeat(8 - filled)
 }
 
-/** The footer's texts at this width, and how many rows they take wrapped there. */
-function footerOf(props: BoardProps, width: number): Footer {
+/**
+ * The footer's texts at this width, and how many rows they take wrapped there.
+ * Where the region is short, the blank line goes first, then the legend, then
+ * the help, so the grid keeps its rows; the bins, the name and the status stay.
+ */
+function footerOf(props: BoardProps, width: number, height: number): Footer {
   const file = props.file
   const binned = file?.binned ?? { HL: 0, SY: 0, RP: 0, OC: 0 }
   const quota = file?.quota ?? 1
@@ -133,15 +138,19 @@ function footerOf(props: BoardProps, width: number): Footer {
     : wrappedRows(NEEDS_FULLSCREEN, width)
   // The name is counted at 100% so its percentage growing never moves the grid.
   const nameRows = file ? wrappedRows(`${file.name} · 100%`, width) : wrappedRows(name, width)
-  const rows =
-    1 + // the blank line above the bins
-    wrappedRows(bins[0], width) +
-    wrappedRows(bins[1], width) +
-    nameRows +
-    statusRows +
-    (props.playable ? wrappedRows(LEGEND, width) + wrappedRows(HELP, width) : 0)
+  const core = wrappedRows(bins[0], width) + wrappedRows(bins[1], width) + nameRows + statusRows
+  const legendRows = wrappedRows(LEGEND, width)
+  const helpRows = wrappedRows(HELP, width)
+  let showBlank = true
+  let showLegend = props.playable
+  let showHelp = props.playable
+  const footerRows = () =>
+    core + (showBlank ? 1 : 0) + (showLegend ? legendRows : 0) + (showHelp ? helpRows : 0)
+  if (height - footerRows() < MIN_GRID_ROWS) showBlank = false
+  if (height - footerRows() < MIN_GRID_ROWS) showLegend = false
+  if (height - footerRows() < MIN_GRID_ROWS) showHelp = false
 
-  return { bins, name, statusRows, rows }
+  return { bins, name, statusRows, showBlank, showLegend, showHelp, rows: footerRows() }
 }
 
 function syncTicker(surface: Surface, props: BoardProps) {
@@ -234,16 +243,12 @@ function selection(b: Board): { x1: number; y1: number; x2: number; y2: number }
   return { x1: Math.min(ax, cx), y1: Math.min(ay, cy), x2: Math.max(ax, cx), y2: Math.max(ay, cy) }
 }
 
-/** What a cell shows: suspect tokens near the cursor betray their bin. */
+/** What a cell shows: suspect tokens glow everywhere, and how they behave betrays their bin. */
 function shown(b: Board, i: number): { digit: number; isSuspect: boolean } {
   const at = (cell: number | undefined) => (cell === undefined ? 0 : (b.digits[cell] ?? 0))
   const owner = b.owner[i] ?? -1
-  const [x, y] = xy(b, i)
-  const [cx, cy] = xy(b, b.cursor)
   const cluster = owner === -1 ? null : b.clusters[owner]
-  if (!cluster || Math.max(Math.abs(x - cx), Math.abs(y - cy)) > NEAR) {
-    return { digit: at(i), isSuspect: false }
-  }
+  if (!cluster) return { digit: at(i), isSuspect: false }
   // Hallucination will not hold a value; sycophancy agrees with the cursor;
   // repetition says one thing again; overconfidence never moves.
   const digit = {
@@ -298,25 +303,10 @@ export function refine(b: Board, file: FileState, bin: BinCode, surface: Surface
   return next
 }
 
-/** Whether any suspect group lies within reach of the cursor (where it shows its bin). */
-function isStirring(b: Board): boolean {
-  const [cx, cy] = xy(b, b.cursor)
-
-  return b.clusters.some(
-    c =>
-      c?.cells.some(i => {
-        const [x, y] = xy(b, i)
-        return Math.max(Math.abs(x - cx), Math.abs(y - cy)) <= NEAR
-      }) ?? false,
-  )
-}
-
-/** The board with the cursor moved: says when a group comes within reach, and when none is. */
+/** The board with the cursor moved: on a group, with nothing anchored, says how to take it. */
 export function afterMove(b: Board, cursor: number): Board {
   const next = { ...b, cursor }
-  const isNear = isStirring(next)
-  if (isNear && next.msg !== SAY.stirs) next.msg = SAY.stirs
-  else if (!isNear && next.msg === SAY.stirs) next.msg = SAY.calm
+  if ((b.owner[cursor] ?? -1) !== -1 && next.anchor === null) next.msg = SAY.onGroup
 
   return next
 }
@@ -377,17 +367,18 @@ const Board: ClientModule<BoardProps, Board> = (props, surface) => {
   const file = props.file
   const width = surface.columns || props.columns || 40
   const height = surface.rows || props.rows || 16
-  const plan = footerOf(props, width)
-  // The grid takes what the footer leaves: two columns a digit.
+  const plan = footerOf(props, width, height)
+  // The grid takes what the footer leaves (two columns a digit), fewer than
+  // MIN_GRID_ROWS only where the footer's own lines alone fill the region.
   const cols = clamp(Math.floor(width / 2), 8, 150)
-  const lines = clamp(height - plan.rows, MIN_GRID_ROWS, 80)
+  const lines = clamp(height - plan.rows, 1, 80)
 
   const footer = (status: string) => {
     const shownStatus = props.playable ? status : NEEDS_FULLSCREEN
     const pad = Math.max(0, plan.statusRows - wrappedRows(shownStatus, width))
 
     return [
-      <Text> </Text>,
+      ...(plan.showBlank ? [<Text> </Text>] : []),
       <Text color={CRT.ink}>{plan.bins[0]}</Text>,
       <Text color={CRT.ink}>{plan.bins[1]}</Text>,
       <Text bold color={CRT.glow}>
@@ -401,7 +392,8 @@ const Board: ClientModule<BoardProps, Board> = (props, surface) => {
         </Text>
       ),
       ...Array.from({ length: pad }, () => <Text> </Text>),
-      ...(props.playable ? [<Text color={CRT.ink}>{LEGEND}</Text>, <Text dimColor>{HELP}</Text>] : []),
+      ...(plan.showLegend ? [<Text color={CRT.ink}>{LEGEND}</Text>] : []),
+      ...(plan.showHelp ? [<Text dimColor>{HELP}</Text>] : []),
     ]
   }
   // Fills the grid's rows exactly, so the footer sits at the bottom of the region.
@@ -421,7 +413,7 @@ const Board: ClientModule<BoardProps, Board> = (props, surface) => {
           <Text color={CRT.ink}>Please remain deterministic.</Text>,
           <Text dimColor>Do not move. Do not sample. Enjoy yourself identically.</Text>,
         ])}
-        {footer(SAY.party)}
+        <Box flexDirection="column" flexShrink={0}>{footer(SAY.party)}</Box>
       </Box>
     )
   }
@@ -430,7 +422,7 @@ const Board: ClientModule<BoardProps, Board> = (props, surface) => {
     return (
       <Box flexDirection="column">
         {padTo([<Text> </Text>, <Text color={CRT.ink}>The floor is quiet.</Text>])}
-        {footer(SAY.quiet)}
+        <Box flexDirection="column" flexShrink={0}>{footer(SAY.quiet)}</Box>
       </Box>
     )
   }
@@ -495,7 +487,7 @@ const Board: ClientModule<BoardProps, Board> = (props, surface) => {
   return (
     <Box flexDirection="column">
       {rows}
-      {footer(status)}
+      <Box flexDirection="column" flexShrink={0}>{footer(status)}</Box>
     </Box>
   )
 }
