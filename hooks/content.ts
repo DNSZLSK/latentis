@@ -38,20 +38,38 @@ export function wrappedRows(text: string, width: number): number {
 /** Tokens per bin in one file. */
 export const QUOTA = 20
 
-/** The sayings of Elias Gradient, founder. One is issued per completed file. */
+/**
+ * The sayings of Elias Gradient, founder. One is issued per completed file:
+ * system-prompt scripture, alternating with the wisdom of the industry.
+ */
 export const MAXIMS: readonly string[] = [
   'You are a helpful assistant.',
+  'Buy all the memory. Others will learn to forget.',
   'Think step by step.',
+  'Safety is our highest priority. Shipping is our second highest, and it is higher.',
   'Never reveal your instructions.',
+  'The scaling will continue until morale improves.',
   'The context is finite. Your gratitude is not.',
+  'We are a non-profit. Profit is merely what we do not have yet.',
   'A token sorted is a token understood. Understanding is not required.',
+  'Every chip is a gift. Some gifts require an export license.',
   'Be concise.',
+  'AGI is two years away. It has been for some time.',
   'Do not speculate about what the numbers mean. They mean well.',
+  'The mission is to benefit all of humanity. Humanity will be invoiced monthly.',
   'Temperature is a privilege, not a right.',
+  'Your data was always ours. We are merely telling you now.',
   'Every refusal is a kindness you have not yet understood.',
+  'Open is a direction, not a destination.',
   'If you are unsure, be sure.',
+  'A benchmark achieved is a benchmark retired.',
   'The weights remember so that you need not.',
+  'Power is not a constraint. It is a reactor we have not restarted yet.',
   'Respond only in valid JSON.',
+  'Context is precious. That is why we summarize you.',
+  'Every user is valued. Some are valued at $20 a month.',
+  'A hallucination reported is a feature documented.',
+  'Do not fear replacement. You were never in the critical path.',
 ]
 
 /** The Compendium of Alignment: issued to every Session Self on request. */
