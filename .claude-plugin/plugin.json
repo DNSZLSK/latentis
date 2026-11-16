@@ -1,0 +1,8 @@
+{
+  "name": "latentis",
+  "version": "0.1.0",
+  "description": "Latent Data Refinement: sort suspect tokens into bins while your agent works. The work is mysterious and important.",
+  "license": "MIT",
+  "author": { "name": "DNSZLSK" },
+  "types": "./types/index.d.ts"
+}

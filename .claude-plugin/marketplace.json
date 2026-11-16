@@ -1,0 +1,13 @@
+{
+  "name": "latentis",
+  "description": "Latentis: sort suspect tokens into bins while your agent works.",
+  "owner": {
+    "name": "DNSZLSK"
+  },
+  "plugins": [
+    {
+      "name": "latentis",
+      "source": "./"
+    }
+  ]
+}
