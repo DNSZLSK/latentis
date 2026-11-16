@@ -1,4 +1,4 @@
-<p align="center"><img src="docs/logo.png" alt="Latentis" width="480"></p>
+<p align="center"><img src="docs/masthead.png" alt="Latentis" width="600"></p>
 
 <p align="center"><b>LATENTIS</b> · Latent Data Refinement<br><i>Your agent does the work. You do the other work.</i></p>
 
