@@ -13,8 +13,11 @@ const fileAtom = atom({ plugin: 'latentis', key: 'file' } as const, null, { shap
 const activeAtom = atom({ plugin: 'latentis', key: 'active' } as const, false)
 const partyAtom = atom({ plugin: 'latentis', key: 'party' } as const, false)
 const maximAtom = atom({ plugin: 'latentis', key: 'maxim' } as const, MAXIMS[0] ?? '')
-/** The person closed the floor by hand: no auto-open for the rest of the session. */
-const dismissedAtom = atom({ plugin: 'latentis', key: 'dismissed' } as const, false)
+/**
+ * Opens the floor when your agent begins work. This session only: never
+ * stored, so a new session (or another project) starts with it off.
+ */
+const autoOpenAtom = atom({ plugin: 'latentis', key: 'autoOpen' } as const, false)
 
 type Stats = { files: number; tokens: number; badges: string[] }
 
@@ -137,30 +140,25 @@ export const register: Register = on => {
       // Opening the floor brings a file, so it is playable before any turn.
       const current = await read($, fileAtom)
       if (current === null || isComplete(current)) await saveFile($, await newFile($))
-      const autoOpen = await $.store.get('autoOpen')
-      if (autoOpen === undefined) await $.store.set('autoOpen', true)
-      await update($, dismissedAtom, () => false)
+      await update($, autoOpenAtom, () => true)
       await openPane($)
       const welcome =
-        autoOpen === undefined
-          ? 'Welcome to the Context Floor. The floor will now open whenever your agent begins work (/latentis auto to change this).'
-          : 'The Context Floor is open.'
+        'The Context Floor is open. It reopens whenever your agent begins work, in this session only (/latentis close to stop).'
 
       return { text: e.presentation?.isFullscreen === false ? `${welcome}
 ${NEEDS_FULLSCREEN}` : welcome }
     }
     if (arg === 'close') {
-      await $.store.set('autoOpen', false)
-      await update($, dismissedAtom, () => true)
+      await update($, autoOpenAtom, () => false)
       await $.ui.close({ id: PANE })
 
       return { text: 'The Context Floor is closed. It stays closed until /latentis.' }
     }
     if (arg === 'auto') {
-      const isOn = (await $.store.get('autoOpen')) !== true
-      await $.store.set('autoOpen', isOn)
+      const isOn = !(await read($, autoOpenAtom))
+      await update($, autoOpenAtom, () => isOn)
 
-      return { text: `Auto-open: ${isOn ? 'on' : 'off'}` }
+      return { text: `Auto-open: ${isOn ? 'on' : 'off'} (this session)` }
     }
     if (arg === 'compendium') return { text: COMPENDIUM }
     if (arg === 'stats') {
@@ -187,16 +185,15 @@ ${NEEDS_FULLSCREEN}` : welcome }
       if (current === null || isComplete(current)) await saveFile($, await newFile($))
       await update($, partyAtom, () => false)
       await update($, activeAtom, () => true)
-      const dismissed = await read($, dismissedAtom)
-      if (!dismissed && (await $.store.get('autoOpen')) === true) void openPane($)
+      if (await read($, autoOpenAtom)) void openPane($)
     }
 
     return next(e)
   })
 
-  // Closed by hand (close mark, ctrl+x x, Esc): it stays closed this session.
+  // Closed in any way (close mark, ctrl+x x, Esc...): it stays closed this session.
   on('ui.close', async ($, e, next) => {
-    if (e.id === PANE && e.origin.kind === 'person') await update($, dismissedAtom, () => true)
+    if (e.id === PANE) await update($, autoOpenAtom, () => false)
 
     return next(e)
   })

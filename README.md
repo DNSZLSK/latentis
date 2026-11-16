@@ -98,9 +98,9 @@ To run it from a clone while working on it: `claude --plugin-dir /path/to/latent
 **Commands**
 
 ```
-/latentis              open the floor and get a file (the first time, also turns on auto-open)
-/latentis close        close the floor and turn off auto-open
-/latentis auto         toggle opening the floor whenever your agent starts working
+/latentis              open the floor and get a file; it reopens when your agent starts working, this session only
+/latentis close        close the floor; it stays closed (closing the pane by hand does the same)
+/latentis auto         toggle reopening the floor whenever your agent starts working (this session)
 /latentis compendium   the Compendium of Alignment (the rules, more or less)
 /latentis stats        files refined, tokens sorted, commendations
 ```

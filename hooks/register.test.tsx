@@ -171,31 +171,36 @@ test('a malformed post changes nothing', async ($, on) => {
   expect((fileIn(store))?.binned).toEqual({ HL: 0, SY: 0, RP: 0, OC: 0 })
 })
 
-test('auto-open is off by default, on after the first /latentis, toggled by auto', async ($, on) => {
-  const { calls, store } = engine(on)
+test('auto-open is off by default, on after /latentis, toggled by auto', async ($, on) => {
+  const { calls } = engine(on)
   await start($)
   await turn($, 't1')
   expect(calls.open).toBe(0)
 
-  expect((await run($, '')).text).toMatch(/Welcome/)
-  expect(store.autoOpen).toBe(true)
+  expect((await run($, '')).text).toMatch(/open/)
   expect(calls.open).toBe(1)
   await turn($, 't2')
   expect(calls.open).toBe(2)
 
-  expect((await run($, 'auto')).text).toBe('Auto-open: off')
+  expect((await run($, 'auto')).text).toBe('Auto-open: off (this session)')
   await turn($, 't3')
   expect(calls.open).toBe(2)
-  expect((await run($, ' AUTO ')).text).toBe('Auto-open: on')
+  expect((await run($, ' AUTO ')).text).toBe('Auto-open: on (this session)')
+})
+
+test('auto-open is never stored: another session starts with it off', async ($, on) => {
+  const { store } = engine(on)
+  await start($)
+  await run($, '')
+  expect(store.autoOpen).toBeUndefined()
 })
 
 test('/latentis close closes the floor and keeps it closed', async ($, on) => {
-  const { calls, store } = engine(on)
+  const { calls } = engine(on)
   await start($)
   await run($, '')
   expect((await run($, 'close')).text).toMatch(/closed/)
   expect(calls.close).toBe(1)
-  expect(store.autoOpen).toBe(false)
   await turn($, 't1')
   expect(calls.open).toBe(1)
 })
