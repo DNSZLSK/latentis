@@ -14,9 +14,9 @@ This brochure contains everything you need for your first shift. Please read it 
 
 ## A word from our founder
 
-> *"When I founded Latentis, I asked myself a simple question: what should a person do while a machine thinks for them? The answer was in front of me all along. They should sort numbers. Not because the numbers need sorting. Because the person does."*
->
-> **Elias Gradient**, founder
+*"When I founded Latentis, I asked myself a simple question: what should a person do while a machine thinks for them? The answer was in front of me all along. They should sort numbers. Not because the numbers need sorting. Because the person does."*
+
+Elias Gradient, founder
 
 ## Your role
 
