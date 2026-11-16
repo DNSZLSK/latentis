@@ -225,7 +225,17 @@ ${NEEDS_FULLSCREEN}` : welcome }
       const rows = Math.max(1, room - wrappedRows(header, width) - wrappedRows(maximLine, width))
       // The terminal's main screen reports no click: the board could never take the keys.
       const playable = !(e.surface === 'terminal' && e.viewport?.isFullscreen === false)
-      const props: BoardProps = { file, active, party, playable, columns: width, rows }
+      // Overtime: the agent is back, but a refiner still at the board keeps the shift.
+      const isAtBoard = e.props.isFocused === true
+      const props: BoardProps = {
+        file,
+        active: active || isAtBoard,
+        overtime: !active && isAtBoard,
+        party,
+        playable,
+        columns: width,
+        rows,
+      }
 
       return (
         <Box flexDirection="column">

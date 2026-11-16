@@ -455,3 +455,22 @@ test('moving near a group says something stirs; moving away calms it', () => {
   // Far from groups, other messages are left alone.
   expect(afterMove({ ...b, msg: 'Refined.' }, far).msg).toBe('Refined.')
 })
+
+test('overtime: the agent is back, but the board stays live while the refiner is at it', async ($, on) => {
+  engine(on)
+  await start($)
+  await turn($, 't1')
+  await done($, 't1')
+  // At the board (the pane holds the keyboard) after the turn: still playable.
+  const focused = { ...PANE, props: { ...PANE.props, isFocused: true } }
+  const ui = await $.ui.mount({ ...focused, surface: 'terminal', viewport: FULL })
+  expect(await ui.find({ type: 'Text', text: /Overtime\. Your agent has returned/, in: 'board' })).toBeDefined()
+  expect(await ui.find({ type: 'Text', text: /has been released/, in: 'board' })).toBe(undefined)
+  const before = await cursorAt(ui)
+  await ui.key({ key: 'd', in: 'board' })
+  expect((await cursorAt(ui)).x).toBe(before.x + 1)
+  await ui.unmount()
+
+  // Away from the board: released, as before.
+  expect(await isReleased($)).toBe(true)
+})

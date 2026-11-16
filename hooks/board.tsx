@@ -37,6 +37,7 @@ export const SAY = {
   fileDone: 'File complete. Your diligence has been noted.',
   released: 'Your Session Self has been released. Awaiting next assignment.',
   quiet: 'A file arrives when your agent begins its work.',
+  overtime: 'Overtime. Your agent has returned. It can wait.',
   party: 'The party is in progress. Your agent is not invited.',
 } as const
 /** A wrong bin names the right one: the selection stays, so the right key finishes it. */
@@ -93,6 +94,8 @@ type Footer = {
 // the key, pointer and clock listeners, which outlive a single draw.
 const live = new WeakMap<object, BoardProps>()
 const started = new WeakSet<object>()
+// Whether each instance was last drawn in overtime: entering it says so once.
+const wasOvertime = new WeakMap<object, boolean>()
 // The one animation clock of an instance, running only while a shift is on.
 const tickers = new WeakMap<object, () => void>()
 
@@ -437,6 +440,11 @@ const Board: ClientModule<BoardProps, Board> = (props, surface) => {
     b = make(file, cols, lines, b)
     surface.setState(b)
   }
+  if (props.overtime && !wasOvertime.get(surface)) {
+    b = { ...b, msg: SAY.overtime }
+    surface.setState(b)
+  }
+  wasOvertime.set(surface, props.overtime)
 
   const box = selection(b)
   const done = isComplete(file)

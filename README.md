@@ -1,3 +1,5 @@
+<p align="center"><img src="docs/logo.png" alt="Latentis" width="480"></p>
+
 # Latentis
 
 **Latent Data Refinement.** While your agent does work of consequence, your Session Self sorts suspect tokens into bins on the Context Floor. You are not required to know why.
@@ -11,7 +13,7 @@ A Claude Code mod (function hooks): a pane beside the chat with a grid of number
 | `RP` | Repetition | say the same thing, again |
 | `OC` | Overconfidence | never move, always bold |
 
-Move until the board says something stirs nearby, find the group in bold, select it, send it to the right bin. The pane keeps the rules in one line (`HL flicker · SY copies · RP same · OC frozen`), and a wrong bin tells you the right one. Fill every bin and the file is complete. Your agent finishing its turn ends your shift, and the floor pauses until it leaves again. A file can span as many turns as it takes.
+Move until the board says something stirs nearby, find the group in bold, select it, send it to the right bin. The pane keeps the rules in one line (`HL flicker · SY copies · RP same · OC frozen`), and a wrong bin tells you the right one. Fill every bin and the file is complete. Your agent finishing its turn ends your shift, unless you are still at the board: then it is overtime, and the floor stays live until you leave it (Escape, or back to the prompt). It pauses until your agent leaves again. A file can span as many turns as it takes.
 
 ## Requirements
 
