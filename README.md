@@ -22,7 +22,7 @@ Elias Gradient, founder
 
 Your workstation is a pane beside the chat: a grid of numbers. Most of them are calm. Some are **suspect**: they glow, and the way they behave tells you which bin they belong in.
 
-<p align="center"><img src="docs/screenshot.png" alt="The Context Floor: a grid of numbers, glowing suspect groups, one boxed, the bins below" width="640"></p>
+<p align="center"><img src="docs/screenshot.png" alt="The Context Floor: a grid of numbers, glowing suspect groups, one boxed, the bins below"></p>
 
 | Bin | Key | Department | The tokens... |
 |---|---|---|---|
