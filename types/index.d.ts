@@ -39,6 +39,7 @@ declare module 'claude-code' {
       active: boolean
       party: boolean
       maxim: string
+      dismissed: boolean
     }
   }
 }

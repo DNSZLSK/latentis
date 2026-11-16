@@ -13,6 +13,8 @@ const fileAtom = atom({ plugin: 'latentis', key: 'file' } as const, null, { shap
 const activeAtom = atom({ plugin: 'latentis', key: 'active' } as const, false)
 const partyAtom = atom({ plugin: 'latentis', key: 'party' } as const, false)
 const maximAtom = atom({ plugin: 'latentis', key: 'maxim' } as const, MAXIMS[0] ?? '')
+/** The person closed the floor by hand: no auto-open for the rest of the session. */
+const dismissedAtom = atom({ plugin: 'latentis', key: 'dismissed' } as const, false)
 
 type Stats = { files: number; tokens: number; badges: string[] }
 
@@ -111,8 +113,8 @@ export const register: Register = on => {
   on('session.start', async ($, e, next) => {
     await $.command.register({
       name: 'latentis',
-      description: 'Open the Latent Data Refinement floor (auto · compendium · stats)',
-      argumentHint: '[auto|compendium|stats]',
+      description: 'Open the Latent Data Refinement floor (close · auto · compendium · stats)',
+      argumentHint: '[close|auto|compendium|stats]',
       immediate: true,
     })
 
@@ -137,6 +139,7 @@ export const register: Register = on => {
       if (current === null || isComplete(current)) await saveFile($, await newFile($))
       const autoOpen = await $.store.get('autoOpen')
       if (autoOpen === undefined) await $.store.set('autoOpen', true)
+      await update($, dismissedAtom, () => false)
       await openPane($)
       const welcome =
         autoOpen === undefined
@@ -145,6 +148,13 @@ export const register: Register = on => {
 
       return { text: e.presentation?.isFullscreen === false ? `${welcome}
 ${NEEDS_FULLSCREEN}` : welcome }
+    }
+    if (arg === 'close') {
+      await $.store.set('autoOpen', false)
+      await update($, dismissedAtom, () => true)
+      await $.ui.close({ id: PANE })
+
+      return { text: 'The Context Floor is closed. It stays closed until /latentis.' }
     }
     if (arg === 'auto') {
       const isOn = (await $.store.get('autoOpen')) !== true
@@ -167,7 +177,7 @@ ${NEEDS_FULLSCREEN}` : welcome }
       }
     }
 
-    return { text: 'Usage: /latentis [auto|compendium|stats]' }
+    return { text: 'Usage: /latentis [close|auto|compendium|stats]' }
   })
 
   on('turn.start', async ($, e, next) => {
@@ -177,8 +187,16 @@ ${NEEDS_FULLSCREEN}` : welcome }
       if (current === null || isComplete(current)) await saveFile($, await newFile($))
       await update($, partyAtom, () => false)
       await update($, activeAtom, () => true)
-      if ((await $.store.get('autoOpen')) === true) void openPane($)
+      const dismissed = await read($, dismissedAtom)
+      if (!dismissed && (await $.store.get('autoOpen')) === true) void openPane($)
     }
+
+    return next(e)
+  })
+
+  // Closed by hand (close mark, ctrl+x x, Esc): it stays closed this session.
+  on('ui.close', async ($, e, next) => {
+    if (e.id === PANE && e.origin.kind === 'person') await update($, dismissedAtom, () => true)
 
     return next(e)
   })

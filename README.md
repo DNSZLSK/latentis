@@ -99,6 +99,7 @@ To run it from a clone while working on it: `claude --plugin-dir /path/to/latent
 
 ```
 /latentis              open the floor and get a file (the first time, also turns on auto-open)
+/latentis close        close the floor and turn off auto-open
 /latentis auto         toggle opening the floor whenever your agent starts working
 /latentis compendium   the Compendium of Alignment (the rules, more or less)
 /latentis stats        files refined, tokens sorted, commendations
@@ -108,7 +109,7 @@ To run it from a clone while working on it: `claude --plugin-dir /path/to/latent
 
 Latentis is transparent about what it touches. `claude plugin validate` reports:
 
-- **hooks:** `session.start`, `command.run` (its own `/latentis` only), `turn.start`, `turn.complete`, `ui.message`, `ui.render` (its own pane only)
+- **hooks:** `session.start`, `command.run` (its own `/latentis` only), `turn.start`, `turn.complete`, `ui.message`, `ui.close` (its own pane only), `ui.render` (its own pane only)
 - **calls:** `$.command.register`, `$.fs.stat` and `$.fs.read`, `$.session.cwd`, `$.state`, `$.store`, `$.ui.open`, `$.ui.resolve`, `$.ui.toast`
 
 In practice:

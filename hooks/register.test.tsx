@@ -10,7 +10,7 @@ type Git = { kind: 'dir' | 'file' | 'none'; head?: string }
 /** Stands for the engine: an in-memory store, a repo at /work/latentis, a .git. */
 function engine(on: any, git: Git = { kind: 'dir', head: 'ref: refs/heads/main\n' }) {
   const store: Record<string, unknown> = {}
-  const calls = { open: 0, headReads: 0, otherReads: [] as string[], opens: [] as Record<string, unknown>[] }
+  const calls = { open: 0, close: 0, headReads: 0, otherReads: [] as string[], opens: [] as Record<string, unknown>[] }
 
   on('store.get', (_: unknown, e: { key: string }) => ({ value: store[e.key] }))
   on('store.set', (_: unknown, e: { key: string; value: unknown }) => {
@@ -32,6 +32,10 @@ function engine(on: any, git: Git = { kind: 'dir', head: 'ref: refs/heads/main\n
     calls.open += 1
     calls.opens.push(e)
     return { value: { isPlaced: true } }
+  })
+  on('ui.close', () => {
+    calls.close += 1
+    return { value: undefined }
   })
   on('ui.toast', () => ({ value: undefined }))
   on('session.start', (_: unknown, e: { cwd: string }) => ({ cwd: e.cwd }))
@@ -185,12 +189,23 @@ test('auto-open is off by default, on after the first /latentis, toggled by auto
   expect((await run($, ' AUTO ')).text).toBe('Auto-open: on')
 })
 
+test('/latentis close closes the floor and keeps it closed', async ($, on) => {
+  const { calls, store } = engine(on)
+  await start($)
+  await run($, '')
+  expect((await run($, 'close')).text).toMatch(/closed/)
+  expect(calls.close).toBe(1)
+  expect(store.autoOpen).toBe(false)
+  await turn($, 't1')
+  expect(calls.open).toBe(1)
+})
+
 test('compendium, stats and unknown arguments answer', async ($, on) => {
   engine(on)
   await start($)
   expect((await run($, 'compendium')).text).toMatch(/COMPENDIUM OF ALIGNMENT/)
   expect((await run($, 'stats')).text).toMatch(/Files refined: 0/)
-  expect((await run($, 'waffles')).text).toBe('Usage: /latentis [auto|compendium|stats]')
+  expect((await run($, 'waffles')).text).toBe('Usage: /latentis [close|auto|compendium|stats]')
 })
 
 test('a file stored by an earlier shape is declined', async ($, on) => {

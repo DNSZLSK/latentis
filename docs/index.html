@@ -54,6 +54,8 @@
   nav.main a:hover { color: var(--green); text-decoration: underline; }
   .portal { font-size: 13px; letter-spacing: .14em; text-transform: uppercase; text-decoration: none; color: var(--paper); background: var(--green); padding: 9px 16px; font-variation-settings: "wdth" 112; }
   .portal:hover { background: var(--ink); }
+  /* The portal and Careers lead to the same place: the portal stands in for the menu on phones only. */
+  .mast-portal { display: none; }
 
   /* Hero */
   .hero { padding: 96px 0 72px; border-bottom: 1px solid var(--rule); }
@@ -66,8 +68,10 @@
   .actions a.quiet { font-size: 14px; letter-spacing: .08em; }
 
   /* The floor, as seen through the observation window */
-  .window { background: var(--crt-bg); padding: 22px 22px 18px; border: 10px solid var(--paper-deep); outline: 1px solid var(--rule); }
+  .window { container-type: inline-size; background: var(--crt-bg); padding: 22px 22px 18px; border: 10px solid var(--paper-deep); outline: 1px solid var(--rule); }
   .floor { font-family: var(--mono); font-size: clamp(11px, 1.15vw, 14px); line-height: 1.55; color: var(--crt-base); white-space: pre; overflow: hidden; user-select: none; }
+  /* 30 digits and their spaces are 60 monospace cells, about 36em: the grid always fits whole. */
+  @supports (width: 1cqw) { .floor { font-size: min(14px, 100cqw / 36.5); } }
   .floor b { color: var(--crt-glow); font-weight: 600; }
   .floor i { font-style: normal; opacity: .55; }
   .window .caption { font-family: var(--mono); font-size: 11px; color: var(--crt-ink); margin-top: 12px; display: flex; justify-content: space-between; gap: 12px; opacity: .85; }
@@ -109,7 +113,7 @@
   .onboard a { color: var(--paper); }
   .code-slip { background: var(--paper); color: var(--ink); padding: 26px 28px; margin: 8px 0 18px; }
   .code-slip .slip-head { font-size: 11px; letter-spacing: .26em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; display: flex; justify-content: space-between; gap: 12px; }
-  .code-slip code { font-family: var(--mono); font-size: clamp(13px, 1.6vw, 17px); color: var(--green); word-break: break-all; }
+  .code-slip code { font-family: var(--mono); font-size: clamp(13px, 1.6vw, 17px); color: var(--green); overflow-wrap: anywhere; }
   .copy { font: inherit; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; background: none; border: 1px solid var(--rule); padding: 4px 10px; cursor: pointer; color: var(--ink); }
   .copy:hover { border-color: var(--green); color: var(--green); }
   .steps { margin: 0; padding: 0 0 0 20px; }
@@ -133,26 +137,41 @@
   footer .wrap { display: grid; grid-template-columns: auto 1fr auto; gap: 40px; align-items: start; }
   footer img { height: 26px; opacity: .9; }
   footer p { margin: 0 0 8px; max-width: 46em; }
+  /* Grid children may shrink below their content (the floor's long lines). */
+  .hero .wrap > *, .cols > *, .founder > *, .depts > *, footer .wrap > * { min-width: 0; }
 
   @media (max-width: 860px) {
     .hero { padding: 56px 0 48px; }
-    .hero .wrap, .cols, .founder { grid-template-columns: 1fr; gap: 40px; }
+    .hero .wrap, .cols, .founder { grid-template-columns: minmax(0, 1fr); gap: 40px; }
     .depts { grid-template-columns: 1fr 1fr; }
     .dept:nth-child(2) { border-right: 0; }
     .dept:nth-child(3) { padding-left: 0; }
     .dept:nth-child(n+3) { border-top: 1px solid var(--rule); }
     ol.principles { columns: 1; }
     .portrait { max-width: 260px; }
-    footer .wrap { grid-template-columns: 1fr; gap: 20px; }
+    footer .wrap { grid-template-columns: minmax(0, 1fr); gap: 20px; }
     section { padding: 64px 0; }
     nav.main { gap: 18px; }
   }
   @media (max-width: 520px) {
     .wrap { padding: 0 16px; }
     nav.main { display: none; }
+    .mast-portal { display: inline-block; }
     .depts { grid-template-columns: 1fr; }
     .dept, .dept + .dept { padding-left: 0; border-right: 0; border-top: 1px solid var(--rule); }
     .benefits td:first-child { width: 96px; }
+    .mast .wrap { flex-wrap: nowrap; gap: 12px; }
+    .mast-portal { font-size: 11px; letter-spacing: .1em; padding: 8px 12px; white-space: nowrap; }
+    .brand span { letter-spacing: .24em; }
+    .window { padding: 14px 12px 12px; border-width: 6px; }
+    .window .caption { font-size: 10px; }
+  }
+  @media (max-width: 400px) {
+    .brand { gap: 10px; }
+    .brand img { height: 26px; }
+    .brand span { letter-spacing: .16em; font-size: 14px; }
+    .mast-portal { letter-spacing: .06em; padding: 8px 10px; }
+    .mast .wrap { flex-wrap: wrap; }
   }
 </style>
 </head>
@@ -168,7 +187,7 @@
       <a href="#careers">Careers</a>
       <a href="#disclosures">Disclosures</a>
     </nav>
-    <a class="portal" href="#careers">Employee Portal</a>
+    <a class="portal mast-portal" href="#careers">Employee Portal</a>
   </div>
 </header>
 
