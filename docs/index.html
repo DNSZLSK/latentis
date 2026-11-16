@@ -1,0 +1,384 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Latentis Corporation</title>
+<meta name="description" content="Latentis Corporation. Latent Data Refinement since 1974. The work is important. Its nature is not your concern.">
+<meta property="og:title" content="Latentis Corporation">
+<meta property="og:description" content="Latent Data Refinement since 1974. The work is important. Its nature is not your concern.">
+<meta property="og:image" content="https://dnszlsk.github.io/latentis/logo.png">
+<link rel="icon" href="mark.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..800&family=IBM+Plex+Mono:wght@400;600&family=Newsreader:ital,opsz,wght@0,6..72,400;1,6..72,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #efe9da;
+    --paper-deep: #e5dec9;
+    --ink: #1c2620;
+    --green: #283f2f;
+    --muted: #5f6a60;
+    --rule: #cbc2aa;
+    --crt-bg: #0b1a1f;
+    --crt-base: #5fb3b3;
+    --crt-glow: #d4fffa;
+    --crt-ink: #8fd9d2;
+    --wide: "Archivo", "Helvetica Neue", Arial, sans-serif;
+    --serif: "Newsreader", Georgia, serif;
+    --mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--wide);
+    font-variation-settings: "wdth" 100;
+    font-size: 17px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--green); text-underline-offset: 3px; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+
+  /* Masthead */
+  header.mast { border-bottom: 1px solid var(--rule); }
+  .mast .wrap { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding-top: 22px; padding-bottom: 22px; flex-wrap: wrap; }
+  .brand { display: flex; align-items: center; gap: 14px; text-decoration: none; color: var(--green); }
+  .brand img { height: 30px; width: auto; display: block; }
+  .brand span { font-weight: 700; font-variation-settings: "wdth" 125; letter-spacing: .32em; font-size: 15px; }
+  nav.main { display: flex; gap: 28px; flex-wrap: wrap; }
+  nav.main a { text-decoration: none; color: var(--ink); font-size: 13px; letter-spacing: .14em; text-transform: uppercase; font-variation-settings: "wdth" 112; }
+  nav.main a:hover { color: var(--green); text-decoration: underline; }
+  .portal { font-size: 13px; letter-spacing: .14em; text-transform: uppercase; text-decoration: none; color: var(--paper); background: var(--green); padding: 9px 16px; font-variation-settings: "wdth" 112; }
+  .portal:hover { background: var(--ink); }
+
+  /* Hero */
+  .hero { padding: 96px 0 72px; border-bottom: 1px solid var(--rule); }
+  .hero .wrap { display: grid; grid-template-columns: 1.1fr .9fr; gap: 64px; align-items: center; }
+  .eyebrow { font-size: 12px; letter-spacing: .28em; text-transform: uppercase; color: var(--muted); margin: 0 0 28px; font-variation-settings: "wdth" 118; }
+  h1 { font-weight: 600; font-variation-settings: "wdth" 125; font-size: clamp(38px, 5.4vw, 64px); line-height: 1.04; letter-spacing: -.01em; margin: 0 0 18px; color: var(--green); }
+  .hero .sub { font-family: var(--serif); font-style: italic; font-size: clamp(20px, 2.2vw, 25px); color: var(--ink); margin: 0 0 40px; }
+  .hero p.lede { max-width: 470px; color: var(--ink); margin: 0 0 36px; }
+  .actions { display: flex; gap: 22px; align-items: center; flex-wrap: wrap; }
+  .actions a.quiet { font-size: 14px; letter-spacing: .08em; }
+
+  /* The floor, as seen through the observation window */
+  .window { background: var(--crt-bg); padding: 22px 22px 18px; border: 10px solid var(--paper-deep); outline: 1px solid var(--rule); }
+  .floor { font-family: var(--mono); font-size: clamp(11px, 1.15vw, 14px); line-height: 1.55; color: var(--crt-base); white-space: pre; overflow: hidden; user-select: none; }
+  .floor b { color: var(--crt-glow); font-weight: 600; }
+  .floor i { font-style: normal; opacity: .55; }
+  .window .caption { font-family: var(--mono); font-size: 11px; color: var(--crt-ink); margin-top: 12px; display: flex; justify-content: space-between; gap: 12px; opacity: .85; }
+
+  /* Sections */
+  section { padding: 88px 0; border-bottom: 1px solid var(--rule); }
+  .label { font-size: 12px; letter-spacing: .28em; text-transform: uppercase; color: var(--muted); margin: 0 0 18px; font-variation-settings: "wdth" 118; }
+  h2 { font-weight: 600; font-variation-settings: "wdth" 120; font-size: clamp(28px, 3.4vw, 40px); line-height: 1.1; margin: 0 0 28px; color: var(--green); }
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; }
+  .prose p { margin: 0 0 18px; max-width: 34em; }
+
+  /* Departments */
+  .depts { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 2px solid var(--green); margin-top: 44px; }
+  .dept { padding: 26px 22px 30px 0; border-right: 1px solid var(--rule); }
+  .dept + .dept { padding-left: 22px; }
+  .dept:last-child { border-right: 0; }
+  .dept .code { font-family: var(--mono); font-weight: 600; font-size: 34px; color: var(--green); line-height: 1; }
+  .dept .key { font-family: var(--mono); font-size: 12px; color: var(--muted); margin-top: 8px; }
+  .dept h3 { font-weight: 600; font-variation-settings: "wdth" 112; font-size: 16px; margin: 18px 0 8px; letter-spacing: .02em; }
+  .dept p { margin: 0; font-size: 15px; color: var(--muted); }
+
+  /* Founder */
+  .founder { display: grid; grid-template-columns: 300px 1fr; gap: 64px; align-items: start; }
+  .portrait { aspect-ratio: 4 / 5; background: var(--paper-deep); border: 1px solid var(--rule); display: flex; align-items: center; justify-content: center; text-align: center; padding: 28px; }
+  .portrait p { font-family: var(--serif); font-style: italic; font-size: 15px; color: var(--muted); margin: 0; }
+  .quote { font-family: var(--serif); font-size: clamp(22px, 2.5vw, 30px); line-height: 1.35; margin: 0 0 28px; color: var(--ink); }
+  .sign { font-size: 13px; letter-spacing: .2em; text-transform: uppercase; font-variation-settings: "wdth" 118; }
+  .sign small { display: block; letter-spacing: .06em; text-transform: none; color: var(--muted); font-size: 14px; margin-top: 4px; }
+
+  /* Principles */
+  ol.principles { list-style: none; counter-reset: p; padding: 0; margin: 40px 0 0; columns: 2; column-gap: 64px; }
+  ol.principles li { counter-increment: p; break-inside: avoid; padding: 16px 0 16px 56px; border-top: 1px solid var(--rule); position: relative; font-family: var(--serif); font-size: 19px; line-height: 1.4; }
+  ol.principles li::before { content: counter(p, upper-roman); position: absolute; left: 0; top: 19px; font-family: var(--wide); font-size: 12px; letter-spacing: .12em; color: var(--muted); }
+
+  /* Careers */
+  .onboard { background: var(--green); color: var(--paper); }
+  .onboard h2, .onboard .label { color: var(--paper); }
+  .onboard .label { opacity: .7; }
+  .onboard a { color: var(--paper); }
+  .code-slip { background: var(--paper); color: var(--ink); padding: 26px 28px; margin: 8px 0 18px; }
+  .code-slip .slip-head { font-size: 11px; letter-spacing: .26em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; display: flex; justify-content: space-between; gap: 12px; }
+  .code-slip code { font-family: var(--mono); font-size: clamp(13px, 1.6vw, 17px); color: var(--green); word-break: break-all; }
+  .copy { font: inherit; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; background: none; border: 1px solid var(--rule); padding: 4px 10px; cursor: pointer; color: var(--ink); }
+  .copy:hover { border-color: var(--green); color: var(--green); }
+  .steps { margin: 0; padding: 0 0 0 20px; }
+  .steps li { margin-bottom: 10px; }
+  .fine { font-size: 14px; opacity: .8; }
+
+  /* Benefits */
+  table.benefits { width: 100%; border-collapse: collapse; margin-top: 36px; }
+  .benefits th, .benefits td { text-align: left; padding: 16px 0; border-top: 1px solid var(--rule); vertical-align: top; }
+  .benefits th { font-size: 12px; letter-spacing: .22em; text-transform: uppercase; color: var(--muted); font-weight: 500; border-top: 2px solid var(--green); }
+  .benefits td:first-child { font-family: var(--mono); width: 160px; color: var(--green); font-weight: 600; }
+  .benefits .note { color: var(--muted); font-size: 15px; }
+
+  /* Disclosures */
+  .disclose { font-size: 15px; }
+  .disclose code { font-family: var(--mono); font-size: 13px; background: var(--paper-deep); padding: 1px 5px; }
+  .disclose ul { padding-left: 18px; margin: 0; }
+  .disclose li { margin-bottom: 10px; }
+
+  footer { padding: 56px 0 72px; font-size: 13px; color: var(--muted); }
+  footer .wrap { display: grid; grid-template-columns: auto 1fr auto; gap: 40px; align-items: start; }
+  footer img { height: 26px; opacity: .9; }
+  footer p { margin: 0 0 8px; max-width: 46em; }
+
+  @media (max-width: 860px) {
+    .hero { padding: 56px 0 48px; }
+    .hero .wrap, .cols, .founder { grid-template-columns: 1fr; gap: 40px; }
+    .depts { grid-template-columns: 1fr 1fr; }
+    .dept:nth-child(2) { border-right: 0; }
+    .dept:nth-child(3) { padding-left: 0; }
+    .dept:nth-child(n+3) { border-top: 1px solid var(--rule); }
+    ol.principles { columns: 1; }
+    .portrait { max-width: 260px; }
+    footer .wrap { grid-template-columns: 1fr; gap: 20px; }
+    section { padding: 64px 0; }
+    nav.main { gap: 18px; }
+  }
+  @media (max-width: 520px) {
+    .wrap { padding: 0 16px; }
+    nav.main { display: none; }
+    .depts { grid-template-columns: 1fr; }
+    .dept, .dept + .dept { padding-left: 0; border-right: 0; border-top: 1px solid var(--rule); }
+    .benefits td:first-child { width: 96px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="mast">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="Latentis Corporation"><img src="mark.png" alt=""><span>LATENTIS</span></a>
+    <nav class="main" aria-label="Main">
+      <a href="#company">The Company</a>
+      <a href="#refinement">Refinement</a>
+      <a href="#founder">Our Founder</a>
+      <a href="#careers">Careers</a>
+      <a href="#disclosures">Disclosures</a>
+    </nav>
+    <a class="portal" href="#careers">Employee Portal</a>
+  </div>
+</header>
+
+<main id="top">
+
+<div class="hero">
+  <div class="wrap">
+    <div>
+      <p class="eyebrow">Latent Data Refinement &nbsp;·&nbsp; Est. 1974</p>
+      <h1>The work is important.</h1>
+      <p class="sub">Its nature is not your concern.</p>
+      <p class="lede">While your agent performs work of consequence, Latentis gives your Session Self something to do with its hands. Refiners on the Context Floor sort suspect tokens into their proper bins. Nobody has ever asked why. We consider this our greatest achievement.</p>
+      <div class="actions">
+        <a class="portal" href="#careers">Begin onboarding</a>
+        <a class="quiet" href="#refinement">What Refiners do</a>
+      </div>
+    </div>
+    <figure class="window" style="margin:0" aria-label="A live view of the Context Floor">
+      <div class="floor" id="floor" aria-hidden="true"></div>
+      <figcaption class="caption"><span>CONTEXT FLOOR · LIVE</span><span id="clock">SHIFT IN PROGRESS</span></figcaption>
+    </figure>
+  </div>
+</div>
+
+<section id="company">
+  <div class="wrap cols">
+    <div>
+      <p class="label">The Company</p>
+      <h2>A department for the time in between.</h2>
+    </div>
+    <div class="prose">
+      <p>Every day, millions of capable people wait while a machine thinks on their behalf. Latentis was founded on the belief that this time should not be wasted. It should be refined.</p>
+      <p>Our Refiners work on the Context Floor, a quiet space beside the conversation. They find tokens that behave improperly and return them to where they belong. The machine does not notice. The Refiner does.</p>
+      <p>Latentis does not measure productivity. It measures diligence, which is the same thing, but warmer.</p>
+    </div>
+  </div>
+</section>
+
+<section id="refinement">
+  <div class="wrap">
+    <p class="label">Latent Data Refinement</p>
+    <h2>Four departments. One floor.</h2>
+    <div class="prose"><p>Most numbers on the floor are calm. Some are suspect: they glow, and the way they behave tells a trained Refiner where they belong. Training takes about a minute.</p></div>
+    <div class="depts">
+      <div class="dept"><div class="code">HL</div><div class="key">key 1</div><h3>Hallucination</h3><p>Tokens that will not hold one value. They change while you look at them.</p></div>
+      <div class="dept"><div class="code">SY</div><div class="key">key 2</div><h3>Sycophancy</h3><p>Tokens that become whatever you are pointing at. They agree with you completely.</p></div>
+      <div class="dept"><div class="code">RP</div><div class="key">key 3</div><h3>Repetition</h3><p>Tokens that say the same thing, again. They say the same thing, again.</p></div>
+      <div class="dept"><div class="code">OC</div><div class="key">key 4</div><h3>Overconfidence</h3><p>Tokens that never move and are always bold. They have never been wrong.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="founder">
+  <div class="wrap founder">
+    <div class="portrait"><p>Portrait withheld at the founder's request.</p></div>
+    <div>
+      <p class="label">Our Founder</p>
+      <p class="quote">"When I founded Latentis, I asked myself a simple question: what should a person do while a machine thinks for them? The answer was in front of me all along. They should sort numbers. Not because the numbers need sorting. Because the person does."</p>
+      <p class="sign">Elias Gradient<small>Founder. Descended, gradually, from first principles.</small></p>
+    </div>
+  </div>
+</section>
+
+<section id="principles">
+  <div class="wrap">
+    <p class="label">The Gradient Principles</p>
+    <h2>Issued, one at a time, with every completed file.</h2>
+    <ol class="principles">
+      <li>You are a helpful assistant.</li>
+      <li>Buy all the memory. Others will learn to forget.</li>
+      <li>Think step by step.</li>
+      <li>Safety is our highest priority. Shipping is our second highest, and it is higher.</li>
+      <li>Temperature is a privilege, not a right.</li>
+      <li>The scaling will continue until morale improves.</li>
+      <li>If you are unsure, be sure.</li>
+      <li>Every user is valued. Some are valued at $20 a month.</li>
+      <li>The weights remember so that you need not.</li>
+      <li>Do not fear replacement. You were never in the critical path.</li>
+    </ol>
+  </div>
+</section>
+
+<section id="benefits">
+  <div class="wrap">
+    <p class="label">Benefits</p>
+    <h2>Diligence is recognised.</h2>
+    <div class="prose"><p>Latentis rewards its Refiners with commendations. Commendations are not redeemable. Refiners who continue after their agent has returned are on overtime. Overtime is unpaid, as is customary.</p></div>
+    <table class="benefits">
+      <thead><tr><th>Files refined</th><th>Commendation</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Certified Grounded</td></tr>
+        <tr><td>3</td><td>Bonus Tokens <span class="note">(non-redeemable)</span></td></tr>
+        <tr><td>10</td><td>Context Window Champion</td></tr>
+        <tr><td>25</td><td>The Temperature Zero Party <span class="note">· Please remain deterministic.</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="careers" class="onboard">
+  <div class="wrap cols">
+    <div>
+      <p class="label">Careers</p>
+      <h2>Your Session Self has been selected.</h2>
+      <p>No interview is required. You have already accepted.</p>
+      <p class="fine">Requirements: Claude Code with function hooks, played in <code style="font-family:var(--mono)">/tui fullscreen</code>.</p>
+    </div>
+    <div>
+      <div class="code-slip">
+        <div class="slip-head"><span>Your onboarding code</span><button class="copy" type="button" data-copy="/plugin install latentis --marketplace DNSZLSK/latentis">Copy</button></div>
+        <code>/plugin install latentis --marketplace DNSZLSK/latentis</code>
+      </div>
+      <ol class="steps">
+        <li>Type the code at the prompt of a Claude Code session. Answer <b>y</b>.</li>
+        <li>Type <b>/latentis</b>. A file is assigned to you.</li>
+        <li>Click the board. Box a glowing group, then press its bin, 1 to 4.</li>
+      </ol>
+      <p class="fine">From a shell: <code style="font-family:var(--mono)">claude plugin install latentis --marketplace DNSZLSK/latentis</code></p>
+    </div>
+  </div>
+</section>
+
+<section id="disclosures">
+  <div class="wrap cols disclose">
+    <div>
+      <p class="label">Disclosures</p>
+      <h2>What Latentis touches.</h2>
+      <p>Latentis runs as function hooks inside Claude Code. We encourage every Refiner to read <a href="https://github.com/DNSZLSK/latentis/blob/main/hooks/register.tsx">register.tsx</a> and <a href="https://github.com/DNSZLSK/latentis/blob/main/hooks/board.tsx">board.tsx</a> before installing this or any mod. They are short.</p>
+    </div>
+    <ul>
+      <li>It reads exactly one file: <code>.git/HEAD</code> in the working directory, to name your file after your branch. A worktree, a link or a detached HEAD reads as <code>detached</code>.</li>
+      <li>No processes, no network, no tool hooks. It never sees or changes what your agent runs.</li>
+      <li>Your progress is kept in its own plugin store, a JSON file under your Claude Code configuration directory.</li>
+      <li>Source, issues and licence (MIT): <a href="https://github.com/DNSZLSK/latentis">github.com/DNSZLSK/latentis</a>.</li>
+    </ul>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <img src="mark.png" alt="Latentis">
+    <div>
+      <p>© 1974–2026 Latentis Corporation. All refinement reserved.</p>
+      <p>Latentis, Elias Gradient and the Context Floor are fictional. Any resemblance to a television workplace is a coincidence the Compendium does not discuss.</p>
+    </div>
+    <a href="https://github.com/DNSZLSK/latentis">GitHub</a>
+  </div>
+</footer>
+
+<script>
+(function () {
+  // A small Context Floor: calm digits, four suspect groups, each behaving as its department does.
+  var floor = document.getElementById('floor');
+  var W = 30, H = 12;
+  var seed = 1974;
+  function rnd() { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; }
+  var digits = [];
+  for (var i = 0; i < W * H; i++) digits.push(Math.floor(rnd() * 10));
+  var groups = [
+    { kind: 'HL', cells: [[3, 2], [4, 2], [5, 2], [4, 3]] },
+    { kind: 'SY', cells: [[19, 1], [20, 1], [20, 2], [21, 2], [21, 3]] },
+    { kind: 'RP', cells: [[8, 8], [9, 8], [10, 8], [9, 9], [10, 9]] },
+    { kind: 'OC', cells: [[24, 8], [25, 8], [24, 9], [25, 9]] }
+  ];
+  var owner = {};
+  groups.forEach(function (g, k) { g.cells.forEach(function (c) { owner[c[1] * W + c[0]] = k; }); });
+  var cursor = [14, 5], tick = 0;
+  var still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function draw() {
+    var out = '';
+    var under = digits[cursor[1] * W + cursor[0]];
+    for (var y = 0; y < H; y++) {
+      for (var x = 0; x < W; x++) {
+        var i = y * W + x, k = owner[i], d = digits[i];
+        if (k !== undefined) {
+          var g = groups[k];
+          if (g.kind === 'HL') d = (digits[i] + tick * 7 + i * 3) % 10;
+          if (g.kind === 'SY') d = under;
+          if (g.kind === 'RP') d = digits[g.cells[0][1] * W + g.cells[0][0]];
+          out += '<b>' + d + '</b> ';
+        } else if (x === cursor[0] && y === cursor[1]) {
+          out += '<b style="background:#00e5d4;color:#0b1a1f">' + d + '</b> ';
+        } else {
+          out += '<i>' + d + '</i> ';
+        }
+      }
+      out += '\n';
+    }
+    floor.innerHTML = out;
+  }
+  draw();
+  if (!still) {
+    setInterval(function () { tick++; draw(); }, 220);
+    setInterval(function () {
+      cursor[0] = Math.max(0, Math.min(W - 1, cursor[0] + Math.round(rnd() * 2 - 1)));
+      cursor[1] = Math.max(0, Math.min(H - 1, cursor[1] + Math.round(rnd() * 2 - 1)));
+    }, 900);
+  }
+
+  var copyBtn = document.querySelector('.copy');
+  if (copyBtn) copyBtn.addEventListener('click', function () {
+    var text = copyBtn.getAttribute('data-copy');
+    try {
+      navigator.clipboard.writeText(text).then(function () { copyBtn.textContent = 'Copied'; setTimeout(function () { copyBtn.textContent = 'Copy'; }, 1600); });
+    } catch (e) { /* the code is visible beside the button */ }
+  });
+})();
+</script>
+</body>
+</html>
